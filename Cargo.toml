@@ -1,0 +1,9 @@
+[package]
+name = "rpng"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+crc32fast = "1.4.2"
+flate2 = "1.1.1"
+image = { version = "0.25.5", features = ["avif-native"] }
