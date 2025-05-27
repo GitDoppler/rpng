@@ -137,7 +137,6 @@ impl PngEncoder {
                 compressed.push(0x78);
                 compressed.push(0x9C);
 
-                // Compress the data using our custom algorithm
                 let deflate_data = self.simple_deflate(data);
                 compressed.extend_from_slice(&deflate_data);
 
@@ -163,9 +162,7 @@ impl PngEncoder {
             let (match_distance, match_length) = self.find_longest_match(data, i);
 
             if match_length >= 4 && match_distance > 0 && match_distance <= 65535 {
-                // Encode a back-reference
                 // Encoding: 255, distance_low, distance_high, length
-                // But avoid distance_low == 255 to prevent confusion with escaped literals
                 let distance_low = (match_distance & 0xFF) as u8;
                 let distance_high = ((match_distance >> 8) & 0xFF) as u8;
 
@@ -176,7 +173,6 @@ impl PngEncoder {
                     result.push(std::cmp::min(match_length, 255) as u8);
                     i += std::cmp::min(match_length, 255);
                 } else {
-                    // Fall back to literal
                     if data[i] == 255 {
                         result.push(255);
                         result.push(255);
@@ -187,7 +183,6 @@ impl PngEncoder {
                 }
             } else {
                 if data[i] == 255 {
-                    // Escape the escape byte
                     result.push(255);
                     result.push(255);
                 } else {
