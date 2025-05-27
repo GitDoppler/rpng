@@ -234,7 +234,6 @@ impl PngEncoder {
         (b << 16) | a
     }
 
-    // Decompression function for testing our compression
     fn decompress_data(&self, compressed: &[u8]) -> std::io::Result<Vec<u8>> {
         if compressed.len() < 6 {
             return Err(std::io::Error::new(
@@ -243,7 +242,6 @@ impl PngEncoder {
             ));
         }
 
-        // Verify zlib header
         if compressed[0] != 0x78 || compressed[1] != 0x9C {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
@@ -254,10 +252,8 @@ impl PngEncoder {
         // Extract deflate data (skip 2-byte header, 4-byte adler32 checksum)
         let deflate_data = &compressed[2..compressed.len() - 4];
 
-        // Decompress using simple_inflate
         let decompressed = self.simple_inflate(deflate_data)?;
 
-        // Verify Adler32 checksum
         let expected_checksum = u32::from_be_bytes([
             compressed[compressed.len() - 4],
             compressed[compressed.len() - 3],
